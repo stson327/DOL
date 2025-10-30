@@ -65,35 +65,30 @@ optimal <- mean(Y_test * (A_V == d_star) / pie_V) / mean((A_V == d_star) / pie_V
 ################### Train data generation
 
 n <- 500; p <- 50 # n <- 1000
+Z <- replicate(p, runif(n,-2,2))
+X <- Z
+X[,1] <- exp(Z[,1]/2)
+X[,2] <- Z[,2] / (1 + exp(Z[,1]))
+X[,3] <- (Z[,1] * Z[,3] / 25 + 0.6)^3
+X[,4] <- (Z[,2] + Z[,4] + 20)^2
 
-for(j in 1:100){
-  
-  Z <- replicate(p, runif(n,-2,2))
-  X <- Z
-  X[,1] <- exp(Z[,1]/2)
-  X[,2] <- Z[,2] / (1 + exp(Z[,1]))
-  X[,3] <- (Z[,1] * Z[,3] / 25 + 0.6)^3
-  X[,4] <- (Z[,2] + Z[,4] + 20)^2
-  
-  V <- X %*% B0
-  
-  prop <- rep(1/2, n)
-  
-  A_binary <- rbinom(n, 1, prop)
-  A <- 2*A_binary - 1
-  pie <- rep(0, n)
-  pie[A==1] <- prop[A==1]
-  pie[A==-1] <- 1-prop[A==-1]
-  
-  ## True mean
-  #mu <- Z[,1]*Z[,2]^3*Z[,3]^2*Z[,4]+
-  mu <- 5 + 6*Z[,1]+8*Z[,2]+3*Z[,3]+5*Z[,4]+7*Z[,5]
-  ate_val <-  5*sin(pi/((V[,1]+1)*sqrt(-V[,2]))) * V[,1] +
-    2.5*(sin(pi * V[,1])) * log(-V[,2])
-  
-  Y <- mu + A*ate_val + rnorm(n, mean = 0, sd = 1)
-  
-  train <- data.frame(A, X, Y, Z=Z, A_binary, 
-                      V1 = V[,1], V2 = V[,2])
-  
-}
+V <- X %*% B0
+
+prop <- rep(1/2, n)
+
+A_binary <- rbinom(n, 1, prop)
+A <- 2*A_binary - 1
+pie <- rep(0, n)
+pie[A==1] <- prop[A==1]
+pie[A==-1] <- 1-prop[A==-1]
+
+
+mu <- 5 + 6*Z[,1]+8*Z[,2]+3*Z[,3]+5*Z[,4]+7*Z[,5]
+ate_val <-  5*sin(pi/((V[,1]+1)*sqrt(-V[,2]))) * V[,1] +
+  2.5*(sin(pi * V[,1])) * log(-V[,2])
+
+Y <- mu + A*ate_val + rnorm(n, mean = 0, sd = 1)
+
+train <- data.frame(A, X, Y, Z=Z, A_binary, 
+                    V1 = V[,1], V2 = V[,2])
+

@@ -1,2 +1,2 @@
 # DOL: Dimension-reduced outcome-weighted learning
-This package implements R functions for the dimension-reduced outcome-weighted learning proposed in Son, Lila, and Chan (2025)
+This pages R/C++ implementation for the dimension-reduced outcome-weighted learning (DOL) proposed in Son, Lila, and Chan (2025)
